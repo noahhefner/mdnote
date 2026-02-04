@@ -11,11 +11,12 @@
       >
         <!-- Left -->
         <div class="flex items-center gap-4 min-w-0">
-          <button
-            class="text-sm font-semibold text-stone-600 dark:text-stone-400 hover:text-emerald-700 dark:hover:text-emerald-400 transition-colors"
+          <RouterLink
+            :to="{ name: 'home' }"
+            class="cursor-pointer text-sm font-semibold text-stone-600 dark:text-stone-400 hover:text-emerald-700 dark:hover:text-emerald-400 transition-colors"
           >
             ← Notes
-          </button>
+          </RouterLink>
 
           <span class="text-stone-300 dark:text-stone-600">/</span>
 
@@ -28,14 +29,28 @@
 
         <!-- Actions -->
         <div class="flex items-center gap-3">
+          <!-- View / Edit toggle -->
           <button
-            class="px-3 py-2 rounded-lg text-sm font-semibold text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-900/40 hover:bg-rose-50 dark:hover:bg-rose-950/40 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2 dark:focus:ring-offset-stone-950 transition"
+            @click="isEditMode = !isEditMode"
+            class="px-3 py-2 rounded-lg text-sm font-semibold border transition focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 dark:focus:ring-offset-stone-950 cursor-pointer"
+            :class="
+              isEditMode
+                ? 'border-stone-300 dark:border-stone-700 text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800'
+                : 'border-emerald-600 text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40'
+            "
+          >
+            <i class="bi mr-1" :class="isEditMode ? 'bi-eye' : 'bi-pencil'"></i>
+            {{ isEditMode ? "View" : "Edit" }}
+          </button>
+
+          <button
+            class="px-3 py-2 rounded-lg text-sm font-semibold text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-900/40 hover:bg-rose-50 dark:hover:bg-rose-950/40 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2 dark:focus:ring-offset-stone-950 transition cursor-pointer"
           >
             Delete
           </button>
 
           <button
-            class="px-4 py-2 rounded-lg text-sm font-bold bg-emerald-700 hover:bg-emerald-800 text-white shadow-sm shadow-emerald-900/10 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 dark:focus:ring-offset-stone-950 transition"
+            class="px-4 py-2 rounded-lg text-sm font-bold bg-emerald-700 hover:bg-emerald-800 text-white shadow-sm shadow-emerald-900/10 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 dark:focus:ring-offset-stone-950 transition cursor-pointer"
           >
             Save
           </button>
@@ -45,23 +60,25 @@
 
     <!-- Editor -->
     <main>
-      <div class="mx-auto w-full max-w-7xl px-6 sm:px-8 py-12">
+      <div class="mx-auto w-full max-w-7xl px-6 sm:px-8 py-8">
         <div
           class="rounded-2xl bg-white dark:bg-stone-900 shadow-sm ring-1 ring-stone-200 dark:ring-stone-800 px-6 sm:px-8 py-8"
         >
           <!-- Title -->
           <input
             v-model="title"
+            :readonly="!isEditMode"
             type="text"
             placeholder="Note title"
             class="w-full mb-6 bg-transparent text-3xl sm:text-4xl font-extrabold tracking-tight text-stone-900 dark:text-stone-100 placeholder-stone-400 dark:placeholder-stone-500 focus:outline-none"
+            :class="!isEditMode && 'cursor-default'"
           />
 
           <!-- Toolbar -->
           <div
-            class="mb-4 flex flex-wrap items-center gap-1 rounded-xl bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 p-1"
+            v-if="isEditMode"
+            class="mb-4 flex flex-wrap items-center gap-1 rounded bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 p-1 sticky top-[82px] z-20"
           >
-            <!-- Bold -->
             <button
               @click="editor?.chain().focus().toggleBold().run()"
               class="toolbar-btn"
@@ -71,7 +88,6 @@
               <i class="bi bi-type-bold"></i>
             </button>
 
-            <!-- Italic -->
             <button
               @click="editor?.chain().focus().toggleItalic().run()"
               class="toolbar-btn"
@@ -81,7 +97,6 @@
               <i class="bi bi-type-italic"></i>
             </button>
 
-            <!-- Strikethrough -->
             <button
               @click="editor?.chain().focus().toggleStrike().run()"
               class="toolbar-btn"
@@ -93,7 +108,6 @@
 
             <div class="mx-1 h-5 w-px bg-stone-300 dark:bg-stone-600" />
 
-            <!-- Headings -->
             <button
               @click="editor?.chain().focus().toggleHeading({ level: 1 }).run()"
               class="toolbar-btn"
@@ -129,7 +143,6 @@
 
             <div class="mx-1 h-5 w-px bg-stone-300 dark:bg-stone-600" />
 
-            <!-- Lists -->
             <button
               @click="editor?.chain().focus().toggleBulletList().run()"
               class="toolbar-btn"
@@ -150,17 +163,15 @@
 
             <div class="mx-1 h-5 w-px bg-stone-300 dark:bg-stone-600" />
 
-            <!-- Blockquote -->
             <button
               @click="editor?.chain().focus().toggleBlockquote().run()"
               class="toolbar-btn"
-              :class="{ 'is-active': editor?.isActive('blockQuote') }"
+              :class="{ 'is-active': editor?.isActive('blockquote') }"
               title="Quote"
             >
               <i class="bi bi-quote"></i>
             </button>
 
-            <!-- Code -->
             <button
               @click="editor?.chain().focus().toggleCode().run()"
               class="toolbar-btn"
@@ -181,7 +192,6 @@
 
             <div class="mx-1 h-5 w-px bg-stone-300 dark:bg-stone-600" />
 
-            <!-- Undo / Redo -->
             <button
               @click="editor?.chain().focus().undo().run()"
               class="toolbar-btn"
@@ -199,21 +209,31 @@
             </button>
           </div>
 
-          <editor-content :editor="editor" />
+          <!-- Editor content -->
+          <editor-content
+            :editor="editor"
+            :class="!isEditMode && 'cursor-default select-none'"
+          />
         </div>
       </div>
     </main>
   </div>
 </template>
 
-<script setup lang="ts">
-import { ref } from "vue";
-import { useEditor, EditorContent } from "@tiptap/vue-3";
+<script setup>
+import { ref, watch, onBeforeUnmount } from "vue";
+import { Editor, EditorContent } from "@tiptap/vue-3";
 import StarterKit from "@tiptap/starter-kit";
 
-const editor = useEditor({
+const isEditMode = ref(true);
+const title = ref("");
+
+const editor = ref(null);
+
+editor.value = new Editor({
   content: "<p>I'm running Tiptap with Vue.js. 🎉</p>",
   extensions: [StarterKit],
+  editable: isEditMode.value,
   editorProps: {
     attributes: {
       class:
@@ -222,21 +242,28 @@ const editor = useEditor({
   },
 });
 
-// State
-const title = ref("");
+watch(isEditMode, (value) => {
+  editor.value?.setOptions({ editable: value });
+});
+
+onBeforeUnmount(() => {
+  editor.value?.destroy();
+});
 </script>
 
 <style scoped>
 .is-active {
   background-color: oklch(59.6% 0.145 163.225);
+  color: white;
 }
 
 .toolbar-btn {
-  padding: 0 1rem;
-  border-radius: 4px;
+  padding: 0 0.75rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
 }
 
 .toolbar-btn i {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
 }
 </style>
