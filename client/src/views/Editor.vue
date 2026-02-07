@@ -58,22 +58,22 @@
       </div>
     </header>
 
-    <!-- Editor -->
     <main>
-      <div class="mx-auto w-full max-w-7xl px-6 sm:px-8 py-8">
-        <div
-          class="rounded-2xl bg-white dark:bg-stone-900 shadow-sm ring-1 ring-stone-200 dark:ring-stone-800 px-6 sm:px-8 py-8"
-        >
-          <!-- Title -->
-          <input
-            v-model="title"
-            :readonly="!isEditMode"
-            type="text"
-            placeholder="Note title"
-            class="w-full mb-6 bg-transparent text-3xl sm:text-4xl font-extrabold tracking-tight text-stone-900 dark:text-stone-100 placeholder-stone-400 dark:placeholder-stone-500 focus:outline-none"
-            :class="!isEditMode && 'cursor-default'"
-          />
+  <div class="mx-auto w-full max-w-7xl px-6 sm:px-8 py-8">
+    <!-- Title (outside the card) -->
+    <input
+      v-model="title"
+      :readonly="!isEditMode"
+      type="text"
+      placeholder="Note title"
+      class="w-full mb-6 bg-transparent text-3xl sm:text-4xl font-extrabold tracking-tight text-stone-900 dark:text-stone-100 placeholder-stone-400 dark:placeholder-stone-500 focus:outline-none"
+      :class="!isEditMode && 'cursor-default'"
+    />
 
+    <!-- Card -->
+    <div
+      class="rounded-2xl bg-white dark:bg-stone-900 shadow-sm ring-1 ring-stone-200 dark:ring-stone-800 px-4 sm:px-6 py-6"
+    >
           <!-- Toolbar -->
           <div
             v-if="isEditMode"
@@ -209,14 +209,16 @@
             </button>
           </div>
 
-          <!-- Editor content -->
-          <editor-content
-            :editor="editor"
-            :class="!isEditMode && 'cursor-default select-none'"
-          />
-        </div>
-      </div>
-    </main>
+      <!-- Editor content -->
+      <editor-content
+        :editor="editor"
+        :class="!isEditMode && 'cursor-default select-none'"
+      />
+    </div>
+  </div>
+</main>
+
+
   </div>
 </template>
 
@@ -231,7 +233,7 @@ const title = ref("");
 const editor = ref(null);
 
 editor.value = new Editor({
-  content: "<p>I'm running Tiptap with Vue.js. 🎉</p>",
+  content: "<p>I'm running Tiptap with Vue.js. </p>",
   extensions: [StarterKit],
   editable: isEditMode.value,
   editorProps: {
